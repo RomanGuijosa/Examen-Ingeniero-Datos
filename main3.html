@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar datos a Lambda</title>
+</head>
+<body>
+    <h1>Enviar datos a Lambda</h1>
+    <form id="dataForm">
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" name="nickname" required><br><br>
+
+        <label for="correoElectronico">Correo Electrónico:</label>
+        <input type="email" id="correoElectronico" name="correoElectronico" required><br><br>
+
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" id="contrasena" name="contrasena" required><br><br>
+
+        <label for="estatus">Estatus:</label>
+        <input type="checkbox" id="estatus" name="estatus"><br><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Obtener los datos del formulario
+            const nickname = document.getElementById('nickname').value;
+            const correoElectronico = document.getElementById('correoElectronico').value;
+            const contrasena = document.getElementById('contrasena').value;
+            const estatus = document.getElementById('estatus').checked;
+
+            // Convertir la contraseña a un array de enteros
+            const contrasenaArray = Array.from(new TextEncoder().encode(contrasena));
+
+            // Crear el objeto de datos
+            const data = {
+                nickname: nickname,
+                correoElectronico: correoElectronico,
+                contrasena: contrasenaArray,
+                estatus: estatus
+            };
+
+            // Enviar los datos a la API Gateway
+            fetch('https://lws6nf2zeb.execute-api.us-east-1.amazonaws.com/dev/api-romangv', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Éxito:', data);
+                alert('Datos enviados con éxito');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error al enviar los datos');
+            });
+        });
+    </script>
+</body>
+</html>
+
